@@ -1,7 +1,6 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-import bisect
 from datetime import datetime
 from users import DB_PATH, connect_db, User
 
@@ -40,15 +39,9 @@ def load_user(name, session):
 def nearest_height(user, session):
     athlete = session.query(Athlete).filter(Athlete.height == user.height).first()
     if not athlete:
-        height_list = [h[0] for h in session.query(athlete.height).filter(athlete.height != None)]
-        height_list.sort()
-        # Find user height index in sorted list
-        i = bisect.bisect_right(height_list, user.height)
-        if i < len(height_list):
-            nh = height_list[i]
-        else:
-            nh = height_list[i - 1]
-        athlete = session.query(Athlete).filter(athlete.height == nh).first()
+        height_list = [h[0] for h in session.query(Athlete.height).filter(Athlete.height != None)]
+        nh = min(height_list, key=lambda x: abs(x - user.height))
+        athlete = session.query(Athlete).filter(Athlete.height == nh).first()
     print(f'{athlete.name} ближайший по росту [{athlete.height} м.]')
 
 
