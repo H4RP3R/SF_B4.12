@@ -37,20 +37,25 @@ def load_user(name, session):
 
 
 def nearest_height(user, session):
+    # Search for an athlete with the same height
     athlete = session.query(Athlete).filter(Athlete.height == user.height).first()
     if not athlete:
+        # find height closest to user
         height_list = [h[0] for h in session.query(Athlete.height).filter(Athlete.height != None)]
         nh = min(height_list, key=lambda x: abs(x - user.height))
+        # get an athlete with the required height from the db
         athlete = session.query(Athlete).filter(Athlete.height == nh).first()
     print(f'{athlete.name} ближайший по росту [{athlete.height} м.]')
 
 
 def nearest_date(user, session):
+    # Search for an athlete with the same birthdate
     athlete = session.query(Athlete).filter(Athlete.birthdate == user.birthdate).first()
     if not athlete:
         date_dict = {datetime.strptime(d[0], '%Y-%m-%d'): d[0] for d in
                      session.query(Athlete.birthdate).all()}
         user_birthdate_datetime = datetime.strptime(user.birthdate, '%Y-%m-%d')
+        # find the nearest date by subtracting user's birth date
         k = min(date_dict.keys(), key=lambda x: abs(x - user_birthdate_datetime))
         athlete = session.query(Athlete).filter(Athlete.birthdate == date_dict[k]).first()
     print(f'{athlete.name} ближайший по дате рождения [{athlete.birthdate}]')

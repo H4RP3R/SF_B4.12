@@ -31,6 +31,7 @@ def connect_db():
 
 
 def request_data():
+    ''' requests user data '''
     first_name = input('Введи своё имя: ').strip()
     last_name = input('А теперь фамилию: ').strip()
 
